@@ -11,7 +11,14 @@ version = "0.1.0"
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/juanMaAV92/kotlin-utils")
+        credentials {
+            username = System.getenv("GITHUB_USERNAME")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -27,7 +34,7 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-health")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // Custom Utils
+    // Custom Utils (from GitHub Packages)
     implementation("com.juanmaav:kotlin-utils:0.1.0")
 
     // Testing

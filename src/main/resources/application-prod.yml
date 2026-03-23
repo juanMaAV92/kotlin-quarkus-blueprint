@@ -5,7 +5,6 @@ quarkus:
       attributes: "deployment.environment=${ENVIRONMENT:prod}"
     exporter:
       otlp:
-        enabled: "${OTEL_ENABLE_OTLP_EXPORTERS:true}"
         endpoint: "http://${OTEL_TRACE_EXPORTER_ENDPOINT:localhost:4317}"
 
   http:
