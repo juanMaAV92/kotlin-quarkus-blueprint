@@ -1,0 +1,113 @@
+# Kotlin Quarkus Blueprint
+
+Template para microservicios y APIs con **Quarkus** y **Kotlin**, bajo **Arquitectura Hexagonal** e integrado con `com.juanmaav:kotlin-utils`.
+
+## Stack
+
+- **Runtime**: Quarkus 3.30.4
+- **Lenguaje**: Kotlin 2.2.21 / Java 21
+- **Observabilidad**: OpenTelemetry (W3C Trace Context)
+- **Core Library**: `kotlin-utils` (Flow Engine, Structured Logging, Retry, Validation)
+- **Health Check**: SmallRye Health (`/health`)
+
+## Arquitectura Hexagonal
+
+```
+com.juanmaav.blueprint
+├── api/              # Adaptadores de entrada
+│   ├── controllers/  #   REST endpoints
+│   ├── dto/          #   Request/Response DTOs
+│   ├── exception/    #   Exception mappers (HttpException, PlatformException)
+│   └── filters/      #   Response filters (X-Trace-Id)
+├── core/             # Dominio y logica de negocio
+│   ├── domain/       #   Modelos de dominio
+│   ├── port/input/   #   Input ports (interfaces)
+│   └── usecase/      #   Casos de uso (orquestados por FlowEngine)
+│       ├── context/  #     Flow contexts
+│       └── steps/    #     Steps (validacion, persistencia, auditoria, etc.)
+└── infra/            # Adaptadores de salida y config
+    ├── client/       #   Clientes externos
+    └── config/       #   LoggerConfig, JacksonConfig
+```
+
+## Integracion con `kotlin-utils`
+
+### Flow Engine (Sagas)
+Ejemplo de orquestacion con ejecucion secuencial, paralela y asincrona:
+
+```kotlin
+override suspend fun execute(user: User): User {
+    val context = UserContext(user)
+    return flow(context, logger) {
+        step(validationStep)
+        step(persistUserStep)
+        
+        parallel {
+            step(auditLogStep)
+            step(indexSearchStep)
+        }
+        
+        asyncStep(welcomeEmailStep)
+    }.persistedUser!!
+}
+```
+
+### Validation DSL
+```kotlin
+validate(context.user) {
+    check(value.name.isNotBlank()) { "Name is required" }
+    check(value.email.contains("@")) { "Invalid email format" }
+    check(value.age >= 18) { "Must be at least 18" }
+}
+```
+
+### Retry
+```kotlin
+val id = retry(maxAttempts = 3, logger = logger) {
+    repository.save(user)
+}
+```
+
+### Structured Logging
+Configurado en `infra/config/LoggerConfig.kt` con TraceProvider de OpenTelemetry. Cada log incluye `trace_id` y `span_id` automaticamente.
+
+## Perfiles
+
+| Perfil | Uso | OTel | Log Level |
+|---|---|---|---|
+| `dev` | `./gradlew quarkusDev` | Desactivado | DEBUG |
+| `prod` | Docker / deploy | Activo + OTLP exporter | INFO |
+
+## Desarrollo
+
+### Requisitos
+- Java 21
+- Gradle (wrapper incluido)
+
+### Ejecucion
+```bash
+./gradlew quarkusDev
+```
+
+### Build
+```bash
+./gradlew build
+```
+
+### Docker
+```bash
+docker build \
+  --build-arg GITHUB_USERNAME=tu-usuario \
+  --build-arg GITHUB_TOKEN=tu-token \
+  -t blueprint .
+
+docker run -p 8080:8080 blueprint
+```
+
+## Health Check
+
+```
+GET /health          # Liveness + Readiness
+GET /health/live     # Liveness
+GET /health/ready    # Readiness
+```

@@ -1,0 +1,14 @@
+package com.juanmaav.blueprint.core.usecase.steps
+
+import com.juanmaav.blueprint.core.usecase.context.UserContext
+import com.juanmaav.platform.flow.Step
+import com.juanmaav.platform.logger.StructuredLogger
+import jakarta.enterprise.context.ApplicationScoped
+
+@ApplicationScoped
+class WelcomeEmailStep(private val logger: StructuredLogger) : Step<UserContext> {
+    override suspend fun execute(context: UserContext): UserContext {
+        logger.debug("welcome_email_step", "Sending welcome email in background", mapOf("email" to context.user.email))
+        return context
+    }
+}

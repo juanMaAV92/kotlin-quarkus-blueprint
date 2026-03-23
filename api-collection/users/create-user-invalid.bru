@@ -1,0 +1,25 @@
+meta {
+  name: Create User - Invalid
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "",
+    "email": "invalid-email",
+    "age": 15
+  }
+}
+
+docs {
+  # Create User - Invalid
+  Request con datos invalidos para probar la validacion acumulativa.
+  Debe retornar VALIDATION_FAILED con los 3 errores.
+}

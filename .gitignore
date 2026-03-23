@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+bin/
+!bin/**/*.sh
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Quarkus
+target/
+.quarkus/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log

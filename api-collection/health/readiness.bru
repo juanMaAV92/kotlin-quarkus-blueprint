@@ -1,0 +1,16 @@
+meta {
+  name: Readiness
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/health/ready
+  body: none
+  auth: none
+}
+
+docs {
+  # Readiness Check
+  Indica si el servicio esta listo para recibir trafico. Verifica conexiones a DB, caches, etc.
+}

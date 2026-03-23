@@ -1,0 +1,18 @@
+quarkus:
+  devservices:
+    enabled: false
+
+  otel:
+    enabled: true
+    sdk:
+      disabled: false
+    traces:
+      exporter: none
+
+  log:
+    level: DEBUG
+    console:
+      format: "%m%n"
+    category:
+      "com.juanmaav":
+        level: DEBUG

@@ -1,0 +1,31 @@
+meta {
+  name: Create User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Juan Martinez",
+    "email": "juan@example.com",
+    "age": 25
+  }
+}
+
+docs {
+  # Create User
+  Crea un nuevo usuario. Ejecuta el flujo completo:
+  1. Validacion (nombre, email, edad >= 18)
+  2. Persistencia con retry
+  3. Email de bienvenida (async)
+  
+  ## Errores posibles
+  - `VALIDATION_FAILED` (400) — campos invalidos
+  - `500` — error interno
+}

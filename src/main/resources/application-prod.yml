@@ -1,0 +1,18 @@
+quarkus:
+  otel:
+    enabled: true
+    resource:
+      attributes: "deployment.environment=${ENVIRONMENT:prod}"
+    exporter:
+      otlp:
+        enabled: "${OTEL_ENABLE_OTLP_EXPORTERS:true}"
+        endpoint: "http://${OTEL_TRACE_EXPORTER_ENDPOINT:localhost:4317}"
+
+  http:
+    so-reuse-port: true
+    idle-timeout: 60s
+
+  thread-pool:
+    core-threads: ${QUARKUS_THREAD_POOL_CORE:4}
+    max-threads: ${QUARKUS_THREAD_POOL_MAX:32}
+    queue-size: ${QUARKUS_THREAD_POOL_QUEUE:512}

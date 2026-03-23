@@ -1,0 +1,27 @@
+quarkus:
+  application:
+    name: kotlin-quarkus-blueprint
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  http:
+    port: 8080
+
+  otel:
+    enabled: true
+    resource:
+      attributes: "deployment.environment=${ENVIRONMENT:dev}"
+
+  smallrye-health:
+    root-path: /health
+
+  log:
+    level: INFO
+    console:
+      format: "%m%n"
+    category:
+      "io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader":
+        level: SEVERE
+      "com.fasterxml.jackson.databind":
+        level: WARN
