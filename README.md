@@ -30,46 +30,6 @@ com.juanmaav.blueprint
     └── config/       #   LoggerConfig, JacksonConfig
 ```
 
-## Integracion con `kotlin-utils`
-
-### Flow Engine (Sagas)
-Ejemplo de orquestacion con ejecucion secuencial, paralela y asincrona:
-
-```kotlin
-override suspend fun execute(user: User): User {
-    val context = UserContext(user)
-    return flow(context, logger) {
-        step(validationStep)
-        step(persistUserStep)
-        
-        parallel {
-            step(auditLogStep)
-            step(indexSearchStep)
-        }
-        
-        asyncStep(welcomeEmailStep)
-    }.persistedUser!!
-}
-```
-
-### Validation DSL
-```kotlin
-validate(context.user) {
-    check(value.name.isNotBlank()) { "Name is required" }
-    check(value.email.contains("@")) { "Invalid email format" }
-    check(value.age >= 18) { "Must be at least 18" }
-}
-```
-
-### Retry
-```kotlin
-val id = retry(maxAttempts = 3, logger = logger) {
-    repository.save(user)
-}
-```
-
-### Structured Logging
-Configurado en `infra/config/LoggerConfig.kt` con TraceProvider de OpenTelemetry. Cada log incluye `trace_id` y `span_id` automaticamente.
 
 ## Perfiles
 
@@ -111,3 +71,13 @@ GET /health          # Liveness + Readiness
 GET /health/live     # Liveness
 GET /health/ready    # Readiness
 ```
+
+## Pruebas con Bruno
+
+Para probar los endpoints de forma local, se incluye una colección de **Bruno** en el directorio `api-collection/`.
+
+1.  **Descargar Bruno**: [https://www.usebruno.com/downloads](https://www.usebruno.com/downloads)
+2.  **Importar Colección**:
+    *   Abre Bruno.
+    *   Selecciona "Open Collection" y elige la carpeta `api-collection` de este proyecto.
+3.  **Entornos**: La colección incluye entornos (environments) para facilitar las pruebas en `dev` y `prod`.
