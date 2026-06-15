@@ -1,5 +1,11 @@
 # Kotlin Quarkus Blueprint
 
+[![CI](https://github.com/juanMaAV92/kotlin-quarkus-blueprint/actions/workflows/ci.yml/badge.svg)](https://github.com/juanMaAV92/kotlin-quarkus-blueprint/actions/workflows/ci.yml)
+![Quarkus](https://img.shields.io/badge/Quarkus-3.30-4695EB?logo=quarkus&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2-7F52FF?logo=kotlin&logoColor=white)
+![JVM](https://img.shields.io/badge/JVM-21-orange)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Template para microservicios y APIs con **Quarkus** y **Kotlin**, bajo **Arquitectura Hexagonal** e integrado con `com.juanmaav:kotlin-utils`.
 
 ## Stack
