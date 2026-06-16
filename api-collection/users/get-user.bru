@@ -1,0 +1,22 @@
+meta {
+  name: Get User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/users/:id
+  auth: none
+}
+
+params:path {
+  id: replace-with-an-id
+}
+
+docs {
+  # Get User
+  Devuelve un usuario por su id.
+
+  ## Errores posibles
+  - `USER_NOT_FOUND` (404) — no existe un usuario con ese id
+}

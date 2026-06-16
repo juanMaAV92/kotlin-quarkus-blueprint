@@ -26,15 +26,35 @@ com.juanmaav.blueprint
 │   ├── exception/    #   Exception mappers (HttpException, PlatformException)
 │   └── filters/      #   Response filters (X-Trace-Id)
 ├── core/             # Dominio y logica de negocio
-│   ├── domain/       #   Modelos de dominio
-│   ├── port/input/   #   Input ports (interfaces)
-│   └── usecase/      #   Casos de uso (orquestados por FlowEngine)
+│   ├── domain/       #   Modelos de dominio (User, Page)
+│   ├── port/input/   #   Input ports (CreateUser, GetUser, ListUsers)
+│   ├── port/output/  #   Output ports (UserRepository)
+│   └── usecase/      #   Casos de uso
 │       ├── context/  #     Flow contexts
 │       └── steps/    #     Steps (validacion, persistencia, auditoria, etc.)
 └── infra/            # Adaptadores de salida y config
+    ├── persistence/  #   InMemoryUserRepository (adaptador del puerto)
     ├── client/       #   Clientes externos
     └── config/       #   LoggerConfig, JacksonConfig
 ```
+
+## Ejemplo: Users (create / get / list)
+
+El dominio `users` muestra la arquitectura end to end:
+
+| Método | Ruta | Caso de uso | Notas |
+|---|---|---|---|
+| `POST` | `/users` | `CreateUserUseCase` | Orquestado con **FlowEngine** (saga): validar → persistir (retry) → en paralelo auditar/indexar → email async, con compensación |
+| `GET` | `/users/{id}` | `GetUserUseCase` | Lectura simple; 404 si no existe |
+| `GET` | `/users?page=1&limit=10` | `ListUsersUseCase` | Lectura paginada |
+
+La persistencia se hace a través del puerto de salida `UserRepository`. El adaptador
+incluido es **in-memory** (`infra/persistence`), así el blueprint corre sin infraestructura
+y los tests no necesitan base de datos. Cambiarlo por un adaptador real (Hibernate Reactive
+Panache, JDBC, …) no toca el `core`: solo se implementa el mismo puerto.
+
+> Las lecturas (`get`/`list`) son consultas simples y **no** usan saga — la orquestación
+> solo se justifica en el flujo de creación multi-paso.
 
 
 ## Perfiles

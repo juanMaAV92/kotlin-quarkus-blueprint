@@ -6,6 +6,7 @@ import com.juanmaav.blueprint.core.usecase.steps.IndexSearchStep
 import com.juanmaav.blueprint.core.usecase.steps.PersistUserStep
 import com.juanmaav.blueprint.core.usecase.steps.ValidationStep
 import com.juanmaav.blueprint.core.usecase.steps.WelcomeEmailStep
+import com.juanmaav.blueprint.infra.persistence.InMemoryUserRepository
 import com.juanmaav.platform.exception.PlatformException
 import com.juanmaav.platform.logger.JsonStructuredLogger
 import kotlinx.coroutines.test.runTest
@@ -20,7 +21,7 @@ class CreateUserUseCaseTest {
         CreateUserUseCase(
             logger = logger,
             validationStep = ValidationStep(),
-            persistUserStep = PersistUserStep(logger),
+            persistUserStep = PersistUserStep(logger, InMemoryUserRepository()),
             auditLogStep = AuditLogStep(logger),
             indexSearchStep = IndexSearchStep(logger),
             welcomeEmailStep = WelcomeEmailStep(logger),
