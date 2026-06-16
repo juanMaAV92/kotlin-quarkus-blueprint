@@ -1,0 +1,20 @@
+meta {
+  name: List Users
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/users?page=1&limit=10
+  auth: none
+}
+
+params:query {
+  page: 1
+  limit: 10
+}
+
+docs {
+  # List Users
+  Lista usuarios paginados. Devuelve `users`, `page`, `limit` y `total`.
+}

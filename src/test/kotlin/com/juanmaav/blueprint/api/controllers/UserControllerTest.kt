@@ -46,4 +46,57 @@ class UserControllerTest {
             .statusCode(404)
             .body("code", equalTo("NOT_FOUND"))
     }
+
+    @Test
+    fun `should get a user by id after creating it`() {
+        val id =
+            given()
+                .contentType(ContentType.JSON)
+                .body("""{"name":"Grace","email":"grace@test.com","age":40}""")
+                .`when`()
+                .post("/users")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path<String>("id")
+
+        given()
+            .`when`()
+            .get("/users/$id")
+            .then()
+            .statusCode(200)
+            .body("id", equalTo(id))
+            .body("name", equalTo("Grace"))
+    }
+
+    @Test
+    fun `should return 404 when getting a missing user`() {
+        given()
+            .`when`()
+            .get("/users/does-not-exist")
+            .then()
+            .statusCode(404)
+            .body("code", equalTo("USER_NOT_FOUND"))
+    }
+
+    @Test
+    fun `should list users with pagination metadata`() {
+        given()
+            .contentType(ContentType.JSON)
+            .body("""{"name":"Linus","email":"linus@test.com","age":35}""")
+            .`when`()
+            .post("/users")
+            .then()
+            .statusCode(200)
+
+        given()
+            .`when`()
+            .get("/users?page=1&limit=10")
+            .then()
+            .statusCode(200)
+            .body("users", notNullValue())
+            .body("page", equalTo(1))
+            .body("limit", equalTo(10))
+            .body("total", notNullValue())
+    }
 }

@@ -1,26 +1,28 @@
 package com.juanmaav.blueprint.core.usecase.steps
 
+import com.juanmaav.blueprint.core.port.output.UserRepository
 import com.juanmaav.blueprint.core.usecase.context.UserContext
 import com.juanmaav.platform.flow.Step
 import com.juanmaav.platform.logger.StructuredLogger
 import com.juanmaav.platform.retry.retry
 import jakarta.enterprise.context.ApplicationScoped
-import java.util.UUID
 
 @ApplicationScoped
-class PersistUserStep(private val logger: StructuredLogger) : Step<UserContext> {
+class PersistUserStep(
+    private val logger: StructuredLogger,
+    private val repository: UserRepository,
+) : Step<UserContext> {
     override suspend fun execute(context: UserContext): UserContext {
-        // Demostración de retry para una operación "frágil"
-        val id =
+        // retry wraps the "fragile" persistence call (transient errors are retried).
+        context.persistedUser =
             retry(maxAttempts = 3, logger = logger) {
-                // Simulación de persistencia
-                UUID.randomUUID().toString()
+                repository.save(context.user)
             }
-        context.persistedUser = context.user.copy(id = id)
         return context
     }
 
     override suspend fun onFailure(context: UserContext) {
-        // Lógica de compensación (ej: borrar de DB si algo falló después)
+        // Compensation: undo the insert if a later step in the saga failed.
+        context.persistedUser?.id?.let { repository.deleteById(it) }
     }
 }

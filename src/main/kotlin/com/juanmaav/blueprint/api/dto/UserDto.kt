@@ -11,3 +11,10 @@ data class UserResponse(
     val name: String,
     val email: String,
 )
+
+data class PagedUsersResponse(
+    val users: List<UserResponse>,
+    val page: Int,
+    val limit: Int,
+    val total: Long,
+)
